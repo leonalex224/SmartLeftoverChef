@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Basic metadata + responsive layout -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Page title shown in browser tab -->
+  <title>Smart Leftover Chef</title>
+
+  <!-- Link to the CSS file served from Flask /static -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+  <div class="page">
+
+    <!-- Header / brand area (semantic landmark for accessibility) -->
+    <header class="brand" role="banner">
+      <!-- Emoji logo is decorative only -->
+      <div class="logo" aria-hidden="true"><span>🍽️</span></div>
+
+      <!-- Site name + short tagline -->
+      <div class="brand-title">
+        <h1 class="name">Smart Leftover Chef</h1>
+        <p class="tagline">Turn leftovers into meals. Reduce food waste.</p>
+      </div>
+    </header>
+
+    <!-- Main content landmark -->
+    <main role="main">
+      <!-- Main “fridge” UI shell -->
+      <section class="fridge" aria-labelledby="fridgeTitle">
+
+        <!-- Fridge header bar -->
+        <div class="fridge-top">
+          <h2 class="title" id="fridgeTitle">My Fridge</h2>
+          <p class="hint">Add ingredients as “shelves” and find recipes</p>
+        </div>
+
+        <div class="fridge-body">
+          <div class="shelf">
+            <h3 class="shelf-label">Ingredients</h3>
+
+            <form action="/results" method="POST" onsubmit="return validateForm();">
+              <div id="ingredientsContainer">
+
+                <!-- Row 1 (required ingredient name) -->
+                <div class="ingredient-row">
+                  <label class="sr-only" for="ingredient_name_0">Ingredient</label>
+                  <input id="ingredient_name_0" type="text" name="ingredient_name" placeholder="Ingredient" required>
+
+                  <label class="sr-only" for="ingredient_amount_0">Amount</label>
+                  <input id="ingredient_amount_0" type="number" name="ingredient_amount" placeholder="Amount" min="0">
+
+                  <label class="sr-only" for="ingredient_unit_0">Unit</label>
+                  <select id="ingredient_unit_0" name="ingredient_unit">
+                    <option value="">Unit</option>
+                    <option value="g">g</option>
+                    <option value="kg">kg</option>
+                    <option value="ml">ml</option>
+                    <option value="l">L</option>
+                    <option value="tsp">tsp</option>
+                    <option value="tbsp">tbsp</option>
+                    <option value="cup">cup</option>
+                    <option value="oz">oz</option>
+                    <option value="fl oz">fl oz</option>
+                    <option value="lb">lb</option>
+                    <option value="pcs">pcs</option>
+                  </select>
+                </div>
+
+                <!-- Row 2 (optional) -->
+                <div class="ingredient-row">
+                  <label class="sr-only" for="ingredient_name_1">Ingredient</label>
+                  <input id="ingredient_name_1" type="text" name="ingredient_name" placeholder="Ingredient">
+
+                  <label class="sr-only" for="ingredient_amount_1">Amount</label>
+                  <input id="ingredient_amount_1" type="number" name="ingredient_amount" placeholder="Amount" min="0">
+
+                  <label class="sr-only" for="ingredient_unit_1">Unit</label>
+                  <select id="ingredient_unit_1" name="ingredient_unit">
+                    <option value="">Unit</option>
+                    <option value="g">g</option>
+                    <option value="kg">kg</option>
+                    <option value="ml">ml</option>
+                    <option value="l">L</option>
+                    <option value="tsp">tsp</option>
+                    <option value="tbsp">tbsp</option>
+                    <option value="cup">cup</option>
+                    <option value="oz">oz</option>
+                    <option value="fl oz">fl oz</option>
+                    <option value="lb">lb</option>
+                    <option value="pcs">pcs</option>
+                  </select>
+                </div>
+
+                <!-- Row 3 (optional) -->
+                <div class="ingredient-row">
+                  <label class="sr-only" for="ingredient_name_2">Ingredient</label>
+                  <input id="ingredient_name_2" type="text" name="ingredient_name" placeholder="Ingredient">
+
+                  <label class="sr-only" for="ingredient_amount_2">Amount</label>
+                  <input id="ingredient_amount_2" type="number" name="ingredient_amount" placeholder="Amount" min="0">
+
+                  <label class="sr-only" for="ingredient_unit_2">Unit</label>
+                  <select id="ingredient_unit_2" name="ingredient_unit">
+                    <option value="">Unit</option>
+                    <option value="g">g</option>
+                    <option value="kg">kg</option>
+                    <option value="ml">ml</option>
+                    <option value="l">L</option>
+                    <option value="tsp">tsp</option>
+                    <option value="tbsp">tbsp</option>
+                    <option value="cup">cup</option>
+                    <option value="oz">oz</option>
+                    <option value="fl oz">fl oz</option>
+                    <option value="lb">lb</option>
+                    <option value="pcs">pcs</option>
+                  </select>
+                </div>
+
+              </div>
+
+              <!-- Dietary filter section -->
+              <div class="dietary-section">
+                <p class="small"><strong>Dietary preference:</strong></p>
+
+                <label>
+                  <input type="radio" name="dietary" value="none" checked>
+                  No filter
+                </label>
+
+                <label>
+                  <input type="radio" name="dietary" value="vegetarian">
+                  Vegetarian
+                </label>
+
+                <label>
+                  <input type="radio" name="dietary" value="vegan">
+                  Vegan
+                </label>
+              </div>
+
+              <div class="controls">
+                <button type="button" class="btn-secondary" onclick="addIngredient()">Add shelf</button>
+                <button type="button" class="btn-secondary" onclick="removeLast()">Remove last shelf</button>
+                <button type="submit" class="btn-primary">Find recipes</button>
+              </div>
+
+              <p class="small tip">
+                Tip: You can leave amount &amp; unit empty. If you enter an amount, you must pick a unit.
+              </p>
+            </form>
+
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+      <p class="small">Smart Leftover Chef • Final Year Project Demo</p>
+    </footer>
+
+  </div>
+
+  <script>
+  function unitOptionsHtml() {
+    return `
+      <option value="">Unit</option>
+      <option value="g">g</option>
+      <option value="kg">kg</option>
+      <option value="ml">ml</option>
+      <option value="l">L</option>
+      <option value="tsp">tsp</option>
+      <option value="tbsp">tbsp</option>
+      <option value="cup">cup</option>
+      <option value="oz">oz</option>
+      <option value="fl oz">fl oz</option>
+      <option value="lb">lb</option>
+      <option value="pcs">pcs</option>
+    `;
+  }
+
+  function refreshRowIds() {
+    const rows = document.querySelectorAll(".ingredient-row");
+
+    rows.forEach((row, i) => {
+      const inputs = row.querySelectorAll("input, select");
+      const labels = row.querySelectorAll("label");
+
+      if (inputs.length >= 3 && labels.length >= 3) {
+        labels[0].setAttribute("for", `ingredient_name_${i}`);
+        inputs[0].setAttribute("id", `ingredient_name_${i}`);
+
+        labels[1].setAttribute("for", `ingredient_amount_${i}`);
+        inputs[1].setAttribute("id", `ingredient_amount_${i}`);
+
+        labels[2].setAttribute("for", `ingredient_unit_${i}`);
+        inputs[2].setAttribute("id", `ingredient_unit_${i}`);
+      }
+    });
+  }
+
+  function addIngredient() {
+    const container = document.getElementById("ingredientsContainer");
+
+    const row = document.createElement("div");
+    row.className = "ingredient-row";
+
+    row.innerHTML = `
+      <label class="sr-only">Ingredient</label>
+      <input type="text" name="ingredient_name" placeholder="Ingredient">
+
+      <label class="sr-only">Amount</label>
+      <input type="number" name="ingredient_amount" placeholder="Amount" min="0">
+
+      <label class="sr-only">Unit</label>
+      <select name="ingredient_unit">${unitOptionsHtml()}</select>
+    `;
+
+    container.appendChild(row);
+    refreshRowIds();
+  }
+
+  function removeLast() {
+    const container = document.getElementById("ingredientsContainer");
+
+    if (container.children.length > 1) {
+      container.removeChild(container.lastElementChild);
+      refreshRowIds();
+    }
+  }
+
+  function validateForm() {
+    const rows = document.querySelectorAll(".ingredient-row");
+
+    for (let row of rows) {
+      const name = row.querySelector('input[name="ingredient_name"]').value.trim();
+      const amount = row.querySelector('input[name="ingredient_amount"]').value.trim();
+      const unit = row.querySelector('select[name="ingredient_unit"]').value.trim();
+
+      if (amount !== "" && unit === "") {
+        alert("Please select a unit for any amount you enter.");
+        return false;
+      }
+
+      if (amount === "" && unit !== "") {
+        alert("Please enter an amount if you select a unit.");
+        return false;
+      }
+
+      if (name === "" && (amount !== "" || unit !== "")) {
+        alert("Please enter an ingredient name for each amount/unit.");
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  // Run once on load
+  refreshRowIds();
+</script>
+</body>
+</html>

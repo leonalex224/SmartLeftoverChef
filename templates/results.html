@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Results • Smart Leftover Chef</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+  <div class="page">
+
+    <header class="brand" role="banner">
+      <div class="logo" aria-hidden="true"><span>🍽️</span></div>
+      <div class="brand-title">
+        <h1 class="name">Smart Leftover Chef</h1>
+        <p class="tagline">Turn leftovers into meals. Reduce food waste.</p>
+      </div>
+    </header>
+
+    <main role="main">
+      <section class="fridge" aria-labelledby="resultsTitle">
+
+        <div class="fridge-top">
+          <h2 class="title" id="resultsTitle">Recipe Results</h2>
+          <p class="hint">Ranked by how well they match your ingredients + amounts</p>
+        </div>
+
+        <div class="fridge-body">
+
+          <!-- Left shelf: user input summary -->
+          <div class="shelf">
+            <h3 class="shelf-label">Your shelves</h3>
+
+            <ul>
+              {% for item in ingredients %}
+                <li>
+                  <strong>{{ item.name }}</strong>
+                  {% if item.quantity %}
+                    – {{ item.quantity }}
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+
+            <p class="small"><a href="/">← Back to fridge</a></p>
+          </div>
+
+          <!-- Right shelf: recipe results -->
+          <div class="shelf">
+            <h3 class="shelf-label">Recipe suggestions</h3>
+
+            {% if dietary != "none" %}
+              <p class="small">
+                Dietary filter applied:
+                <strong>{{ dietary|capitalize }}</strong>
+              </p>
+            {% endif %}
+
+            {% if error %}
+              <p class="small">{{ error }}</p>
+            {% endif %}
+
+            {% if recipes and recipes|length > 0 %}
+              <div class="recipes-grid">
+
+                {% for recipe in recipes %}
+                  <div class="recipe-card">
+
+                    {% if recipe.image %}
+                      <img class="img" src="{{ recipe.image }}" alt="{{ recipe.title }}">
+                    {% endif %}
+
+                    <div class="content">
+                      <h3>{{ recipe.title }}</h3>
+
+                      {% if recipe.category or recipe.area %}
+                        <div class="recipe-meta">
+                          {% if recipe.category %}{{ recipe.category }}{% endif %}
+                          {% if recipe.category and recipe.area %} • {% endif %}
+                          {% if recipe.area %}{{ recipe.area }}{% endif %}
+                        </div>
+                      {% endif %}
+
+                      <div class="recipe-meta">
+                        <strong>Match:</strong> {{ recipe.match_label }}
+                        ({{ recipe.matched_count }} ingredients matched)
+                      </div>
+
+                      {% if recipe.missing and recipe.missing|length > 0 %}
+                        <div class="recipe-meta">
+                          <strong>Missing:</strong>
+                          {{ recipe.missing | join(', ') }}
+                        </div>
+                      {% endif %}
+
+                      {% if recipe.source %}
+                        <p class="small">
+                          <a href="{{ recipe.source }}" target="_blank" rel="noopener">
+                            View full recipe →
+                          </a>
+                        </p>
+                      {% endif %}
+                    </div>
+
+                  </div>
+                {% endfor %}
+
+              </div>
+            {% else %}
+              <p class="small">
+                No recipes found. Try a more common ingredient (e.g. chicken, rice, eggs).
+              </p>
+            {% endif %}
+          </div>
+
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+      <p class="small">Smart Leftover Chef • Final Year Project Demo</p>
+    </footer>
+
+  </div>
+</body>
+</html>
