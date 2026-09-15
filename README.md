@@ -13,6 +13,9 @@ Shows missing ingredients and a link to the original recipe source (or YouTube v
 
 Tech stack:
 Python 3 / Flask
+HTML
+CSS
+JavaScript
 TheMealDB API (public, no API key required)
 
 Setup:
